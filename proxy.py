@@ -13,6 +13,11 @@ NAMESPACE = os.environ.get('NAMESPACE', '')
 VM_NAME = os.environ.get('VM_NAME', 'rhel-podman')
 
 
+async def index_redirect(request):
+    """Redirect / to /vnc.html."""
+    raise web.HTTPFound('/vnc.html')
+
+
 async def vnc_ws(request):
     """Bridge noVNC WebSocket client to KubeVirt VNC API via kubectl proxy."""
     ns = NAMESPACE or request.match_info.get('namespace', '')
@@ -61,6 +66,7 @@ async def vnc_ws(request):
 
 
 app = web.Application()
+app.router.add_get('/', index_redirect)
 app.router.add_get('/websockify', vnc_ws)
 app.router.add_static('/', NOVNC_PATH)
 
